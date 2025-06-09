@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Leave Requests</title>
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+  />
+</head>
+<body>
+  <div class="container mt-5" style="max-width: 900px;">
+    <h2 class="mb-4 text-center">Leave Requests</h2>
+    <div id="message" class="text-center mb-3"></div>
+    <div id="requestsList" class="list-group"></div>
+  </div>
+
+  <script>
+    const requestsList = document.getElementById("requestsList");
+    const messageDiv = document.getElementById("message");
+
+    // Fetch leave requests from backend
+    async function fetchLeaveRequests() {
+      messageDiv.textContent = "";
+      try {
+        const token = localStorage.getItem("jwtToken");
+        if (!token) throw new Error("User not authenticated.");
+
+        const response = await fetch("/auth/admin/leaverequests", {
+          headers: { "Authorization": "Bearer " + token }
+        });
+
+        if (!response.ok) throw new Error("Failed to fetch leave requests");
+
+        const leaveRequests = await response.json();
+        renderLeaveRequests(leaveRequests);
+      } catch (err) {
+        messageDiv.textContent = err.message;
+        messageDiv.style.color = "red";
+      }
+    }
+
+    // Render leave requests in the UI
+    function renderLeaveRequests(requests) {
+      requestsList.innerHTML = "";
+
+      if (requests.length === 0) {
+        requestsList.innerHTML = `<div class="alert alert-info text-center">No leave requests found.</div>`;
+        return;
+      }
+
+      requests.forEach((req) => {
+        const statusBadge = {
+          PENDING: 'warning',
+          APPROVED: 'success',
+          REJECTED: 'danger'
+        }[req.leaveStatus] || 'secondary';
+
+        const item = document.createElement("div");
+        item.className = "list-group-item";
+
+        item.innerHTML = `
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <h5>${req.username}</h5>
+            <span class="badge bg-${statusBadge}">${req.leaveStatus}</span>
+          </div>
+          <p><strong>From:</strong> ${req.startDate} <strong>To:</strong> ${req.endDate}</p>
+          <p><strong>Reason:</strong> ${req.reason || "-"}</p>
+          <div>
+            <button class="btn btn-success btn-sm me-2" ${req.leaveStatus !== 'PENDING' ? 'disabled' : ''} onclick="updateStatus(${req.id}, 'APPROVED')">Approve</button>
+            <button class="btn btn-danger btn-sm" ${req.leaveStatus !== 'PENDING' ? 'disabled' : ''} onclick="updateStatus(${req.id}, 'REJECTED')">Reject</button>
+          </div>
+        `;
+
+        requestsList.appendChild(item);
+      });
+    }
+
+    // Approve or Reject leave request
+    async function updateStatus(requestId, newStatus) {
+      messageDiv.textContent = "";
+
+      try {
+        const token = localStorage.getItem("jwtToken");
+        if (!token) throw new Error("User not authenticated.");
+
+        const response = await fetch(`/auth/admin/leaverequests/${requestId}/status`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + token
+          },
+          body: JSON.stringify({ leaveStatus: newStatus })
+        });
+
+        if (!response.ok) {
+          const errText = await response.text();
+          throw new Error(`Failed to update status: ${errText}`);
+        }
+
+        messageDiv.style.color = "green";
+        messageDiv.textContent = `Leave request ${newStatus.toLowerCase()} successfully.`;
+        fetchLeaveRequests(); // Refresh the list
+      } catch (err) {
+        messageDiv.style.color = "red";
+        messageDiv.textContent = err.message;
+      }
+    }
+
+    window.onload = fetchLeaveRequests;
+  </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
