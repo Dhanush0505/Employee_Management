@@ -1,11 +1,13 @@
 package com.project.Employee_Management.Backend.Service;
 
+import com.project.Employee_Management.Backend.dto.AuthResponse;
 import com.project.Employee_Management.Backend.dto.LoginRequest;
 import com.project.Employee_Management.Backend.Model.User;
 import com.project.Employee_Management.Backend.Repository.UserRepository;
 //import com.project.Employee_Management.Backend.Config.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -26,8 +28,7 @@ public class AuthService {
         // this.jwtUtil = jwtUtil;
     }
 
-    public String authenticateUser(LoginRequest loginRequest) {
-
+    public AuthResponse authenticateUser(LoginRequest loginRequest) {
         try {
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
@@ -37,21 +38,19 @@ public class AuthService {
             );
             SecurityContextHolder.getContext().setAuthentication(authentication);
         } catch (AuthenticationException ex) {
-            throw new RuntimeException("Invalid username/password"); // or custom exception
+            throw new BadCredentialsException("Invalid username/password");
         }
-//        Authentication authentication = authenticationManager.authenticate(
-//                new UsernamePasswordAuthenticationToken(
-//                        loginRequest.getUsername(),
-//                        loginRequest.getPassword()
-//                )
-//        );
-//
-//        SecurityContextHolder.getContext().setAuthentication(authentication);
-//        User user = userRepository.findByUsername(loginRequest.getUsername())
-//                .orElseThrow(() -> new RuntimeException("User not found"));
-//
-//        // Generate JWT token
-        return "Success";
-       // return jwtUtil.generateToken(user);
+
+        User user = userRepository.findByUsername(loginRequest.getUsername())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        // Generate JWT token (uncomment when jwtUtil is ready)
+        // String token = jwtUtil.generateToken(user);
+
+        // For now, returning dummy token for example
+        String token = "dummy-jwt-token";
+
+        return new AuthResponse(token, user.getUsername(), user.getRole().name());
     }
 }
+
