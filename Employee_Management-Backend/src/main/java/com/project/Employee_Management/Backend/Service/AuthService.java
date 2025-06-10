@@ -1,5 +1,6 @@
 package com.project.Employee_Management.Backend.Service;
 
+import com.project.Employee_Management.Backend.Config.jwtUtil;
 import com.project.Employee_Management.Backend.dto.AuthResponse;
 import com.project.Employee_Management.Backend.dto.LoginRequest;
 import com.project.Employee_Management.Backend.Model.User;
@@ -17,15 +18,16 @@ import org.springframework.stereotype.Service;
 @Service
 public class AuthService {
 
+
     private final AuthenticationManager authenticationManager;
     private final UserRepository userRepository;
-    // private final JwtUtil jwtUtil;
+    private final jwtUtil jwtUtil;
 
     @Autowired
-    public AuthService(AuthenticationManager authenticationManager, UserRepository userRepository /*, JwtUtil jwtUtil */) {
+    public AuthService(AuthenticationManager authenticationManager, UserRepository userRepository , jwtUtil jwtUtil ) {
         this.authenticationManager = authenticationManager;
         this.userRepository = userRepository;
-        // this.jwtUtil = jwtUtil;
+        this.jwtUtil = jwtUtil;
     }
 
     public AuthResponse authenticateUser(LoginRequest loginRequest) {
@@ -45,10 +47,10 @@ public class AuthService {
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         // Generate JWT token (uncomment when jwtUtil is ready)
-        // String token = jwtUtil.generateToken(user);
+         String token = jwtUtil.generateToken(user);
 
         // For now, returning dummy token for example
-        String token = "dummy-jwt-token";
+        // String token = "dummy-jwt-token";
 
         return new AuthResponse(token, user.getUsername(), user.getRole().name());
     }

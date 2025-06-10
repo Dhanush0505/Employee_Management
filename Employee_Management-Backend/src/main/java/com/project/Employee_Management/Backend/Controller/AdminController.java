@@ -50,6 +50,7 @@ public class AdminController {
         User savedUser = userService.saveUser(user);
         return new ResponseEntity<>(savedUser, HttpStatus.CREATED);
     }
+
     // Update user details
     @GetMapping("/user/profile")
     public ResponseEntity<EmployeeDto> getCurrentUser() {
