@@ -59,12 +59,13 @@ messageDiv.style.color = "green";
 messageDiv.textContent = "Login successful! Redirecting...";
 
 setTimeout(() => {
-  if (data.role === "ADMIN") {
-    window.location.href = "Admin_Dashboard.html";
-  } else if (data.role === "EMPLOYEE") {
-    window.location.href = "Employee_dashboard.html";
-  } else {
-    window.location.href = "Employee_dashboard.html";
+    if (data.role === "ADMIN") {
+  window.location.href = "http://127.0.0.1:5500/Admin_Dashboard.html";
+} else if (data.role === "EMPLOYEE") {
+  window.location.href = "http://127.0.0.1:5500/Employee_dashboard.html";
+}
+ else {
+    window.location.href = "http://127.0.0.1:5500/Employee_dashboard.html";
   }
 }, 1500);
 
