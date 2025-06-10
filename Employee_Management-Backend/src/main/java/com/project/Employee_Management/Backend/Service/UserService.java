@@ -7,6 +7,7 @@ import com.project.Employee_Management.Backend.dto.EmployeeDto;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -80,4 +81,10 @@ public class UserService {
         }
         return userRepository.findByUsername(username).orElseThrow(() -> new EntityNotFoundException("User not found"));
     }
+
+    public User findByUsername(String currentUsername) {
+        return userRepository.findByUsername(currentUsername)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found: " + currentUsername));
+    }
+
 }

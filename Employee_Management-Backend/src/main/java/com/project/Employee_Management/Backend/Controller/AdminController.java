@@ -7,6 +7,8 @@ import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
@@ -15,6 +17,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
+@CrossOrigin(origins = "http://127.0.0.1:5500")
 @RequestMapping("/api/admin")
 @PreAuthorize("hasRole('ADMIN')")  // All endpoints require admin role
 public class AdminController {
@@ -48,13 +51,18 @@ public class AdminController {
         return new ResponseEntity<>(savedUser, HttpStatus.CREATED);
     }
     // Update user details
-    @PutMapping("/users/{id}")
-    public ResponseEntity<EmployeeDto> updateUser(
-            @PathVariable Long id,
-            @Valid @RequestBody EmployeeDto employeeDto) {
-        User updatedUser = userService.updateUser(id, employeeDto);
-        return ResponseEntity.ok(userService.convertToDto(updatedUser));
+    @GetMapping("/user/profile")
+    public ResponseEntity<EmployeeDto> getCurrentUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String currentUsername = authentication.getName();
+        User user = userService.findByUsername(currentUsername);
+        if (user == null) {
+            return ResponseEntity.notFound().build();
+        }
+        EmployeeDto dto = userService.convertToDto(user);
+        return ResponseEntity.ok(dto);
     }
+
 
     // Delete user
     @DeleteMapping("/users/{id}")
