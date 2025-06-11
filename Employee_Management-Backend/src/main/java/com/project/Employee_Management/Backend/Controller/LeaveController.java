@@ -6,8 +6,10 @@ import com.project.Employee_Management.Backend.dto.leaverequestdto;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 
 @RestController
@@ -51,5 +53,14 @@ public class LeaveController {
         List<Leave> leaves = leaveService.getLeavesForCurrentUser();
         return ResponseEntity.ok(leaves);
     }
+
+    @GetMapping("/my-leaves")
+    @PreAuthorize("hasRole('EMPLOYEE')")
+    public ResponseEntity<List<Leave>> getMyLeaves(Authentication authentication) {
+        String username = authentication.getName();
+        List<Leave> myLeaves = leaveService.getLeavesByUsername(username);
+        return ResponseEntity.ok(myLeaves);
+    }
+
 }
 

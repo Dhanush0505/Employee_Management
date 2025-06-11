@@ -1,19 +1,22 @@
 package com.project.Employee_Management.Backend.Controller;
 
 import com.project.Employee_Management.Backend.Model.User;
+import com.project.Employee_Management.Backend.Service.LeaveService;
 import com.project.Employee_Management.Backend.Service.UserService;
 import com.project.Employee_Management.Backend.dto.EmployeeDto;
 import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController
@@ -23,9 +26,10 @@ import java.util.stream.Collectors;
 public class AdminController {
 
     private final UserService userService;
-
-    public AdminController(UserService userService) {
+    private final LeaveService leaveService;
+    public AdminController(UserService userService,  LeaveService leaveService) {
         this.userService = userService;
+        this.leaveService = leaveService;
     }
 
     // Get all users (employees)
@@ -63,7 +67,24 @@ public class AdminController {
         EmployeeDto dto = userService.convertToDto(user);
         return ResponseEntity.ok(dto);
     }
+    @GetMapping("/user/employee-count")
+    public ResponseEntity<Map<String, Long>> getEmployeeCount() {
+        long count = userService.countAllEmployees();
+        Map<String, Long> response = new HashMap<>();
+        response.put("totalEmployees", count);
+        return ResponseEntity.ok(response);
+    }
+    @GetMapping("/stats")
+    public ResponseEntity<Map<String, Long>> getDashboardStats() {
+        long totalUsers = userService.countAllEmployees();
+        long pendingLeaves = leaveService.countLeavesByStatus("Pending");
 
+        Map<String, Long> stats = new HashMap<>();
+        stats.put("totalUsers", totalUsers);
+        stats.put("pendingLeaves", pendingLeaves);
+
+        return ResponseEntity.ok(stats);
+    }
 
     // Delete user
     @DeleteMapping("/users/{id}")

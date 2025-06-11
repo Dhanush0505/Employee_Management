@@ -23,7 +23,7 @@ public class EmployeeController {
     }
 
     // Get all employees (Admin only)
-    @GetMapping
+    @GetMapping("/")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<EmployeeDto>> getAllEmployees() {
         List<User> users = userService.getAllEmployees();

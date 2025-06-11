@@ -58,4 +58,13 @@ public class LeaveService {
         User user = userService.getCurrentUser();
         return leaveRepository.findByUsername(user.getUsername());
     }
+
+    public long countLeavesByStatus(String status) {
+        LeaveStatus leaveStatus = LeaveStatus.valueOf(status.toUpperCase());
+        return leaveRepository.countByLeaveStatus(leaveStatus);
+    }
+    public List<Leave> getLeavesByUsername(String username) {
+        return leaveRepository.findByUsername(username);
+    }
+
 }

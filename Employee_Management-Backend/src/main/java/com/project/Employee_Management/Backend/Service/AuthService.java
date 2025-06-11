@@ -45,12 +45,7 @@ public class AuthService {
 
         User user = userRepository.findByUsername(loginRequest.getUsername())
                 .orElseThrow(() -> new RuntimeException("User not found"));
-
-        // Generate JWT token (uncomment when jwtUtil is ready)
          String token = jwtUtil.generateToken(user);
-
-        // For now, returning dummy token for example
-        // String token = "dummy-jwt-token";
 
         return new AuthResponse(token, user.getUsername(), user.getRole().name());
     }

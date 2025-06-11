@@ -87,4 +87,7 @@ public class UserService {
                 .orElseThrow(() -> new UsernameNotFoundException("User not found: " + currentUsername));
     }
 
+    public long countAllEmployees() {
+        return userRepository.count();
+    }
 }
