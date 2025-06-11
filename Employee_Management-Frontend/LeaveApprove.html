@@ -4,15 +4,30 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Leave Requests</title>
-  <link
-    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
-    rel="stylesheet"
-  />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <style>
+    body {
+      background-color: #f8f9fa;
+    }
+    .container {
+      background-color: white;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+    }
+    .badge {
+      font-size: 0.9rem;
+      padding: 0.5em 0.75em;
+    }
+    .btn {
+      min-width: 100px;
+    }
+  </style>
 </head>
 <body>
-  <div class="container mt-5" style="max-width: 900px;">
-    <h2 class="mb-4 text-center">Leave Requests</h2>
-    <div id="message" class="text-center mb-3"></div>
+  <div class="container mt-5">
+    <h2 class="mb-4 text-center">Employee Leave Requests</h2>
+    <div id="message" class="text-center mb-3 fw-bold"></div>
     <div id="requestsList" class="list-group"></div>
   </div>
 
@@ -20,14 +35,13 @@
     const requestsList = document.getElementById("requestsList");
     const messageDiv = document.getElementById("message");
 
-    // Fetch leave requests from backend
     async function fetchLeaveRequests() {
       messageDiv.textContent = "";
       try {
         const token = localStorage.getItem("jwtToken");
         if (!token) throw new Error("User not authenticated.");
 
-        const response = await fetch("/auth/admin/leaverequests", {
+        const response = await fetch("http://localhost:8080/api/leaves", {
           headers: { "Authorization": "Bearer " + token }
         });
 
@@ -37,11 +51,10 @@
         renderLeaveRequests(leaveRequests);
       } catch (err) {
         messageDiv.textContent = err.message;
-        messageDiv.style.color = "red";
+        messageDiv.className = "text-danger text-center mb-3 fw-bold";
       }
     }
 
-    // Render leave requests in the UI
     function renderLeaveRequests(requests) {
       requestsList.innerHTML = "";
 
@@ -58,16 +71,19 @@
         }[req.leaveStatus] || 'secondary';
 
         const item = document.createElement("div");
-        item.className = "list-group-item";
+        item.className = "list-group-item mb-3 p-4 rounded border shadow-sm";
 
         item.innerHTML = `
-          <div class="d-flex justify-content-between align-items-center mb-2">
-            <h5>${req.username}</h5>
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <div>
+              <h5 class="mb-1">${req.username}</h5>
+              <p class="mb-1 text-muted"><strong>User ID:</strong> ${req.userId}</p>
+            </div>
             <span class="badge bg-${statusBadge}">${req.leaveStatus}</span>
           </div>
-          <p><strong>From:</strong> ${req.startDate} <strong>To:</strong> ${req.endDate}</p>
+          <p><strong>From:</strong> ${req.startDate} &nbsp;&nbsp; <strong>To:</strong> ${req.endDate}</p>
           <p><strong>Reason:</strong> ${req.reason || "-"}</p>
-          <div>
+          <div class="text-end">
             <button class="btn btn-success btn-sm me-2" ${req.leaveStatus !== 'PENDING' ? 'disabled' : ''} onclick="updateStatus(${req.id}, 'APPROVED')">Approve</button>
             <button class="btn btn-danger btn-sm" ${req.leaveStatus !== 'PENDING' ? 'disabled' : ''} onclick="updateStatus(${req.id}, 'REJECTED')">Reject</button>
           </div>
@@ -77,36 +93,35 @@
       });
     }
 
-    // Approve or Reject leave request
     async function updateStatus(requestId, newStatus) {
-      messageDiv.textContent = "";
+  messageDiv.textContent = "";
 
-      try {
-        const token = localStorage.getItem("jwtToken");
-        if (!token) throw new Error("User not authenticated.");
+  try {
+    const token = localStorage.getItem("jwtToken");
+    if (!token) throw new Error("User not authenticated.");
 
-        const response = await fetch(`/auth/admin/leaverequests/${requestId}/status`, {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": "Bearer " + token
-          },
-          body: JSON.stringify({ leaveStatus: newStatus })
-        });
-
-        if (!response.ok) {
-          const errText = await response.text();
-          throw new Error(`Failed to update status: ${errText}`);
-        }
-
-        messageDiv.style.color = "green";
-        messageDiv.textContent = `Leave request ${newStatus.toLowerCase()} successfully.`;
-        fetchLeaveRequests(); // Refresh the list
-      } catch (err) {
-        messageDiv.style.color = "red";
-        messageDiv.textContent = err.message;
+    const approve = newStatus === "APPROVED"; // convert status to boolean
+    const response = await fetch(`http://localhost:8080/api/leaves/${requestId}/decision?approve=${approve}`, {
+      method: "PUT",
+      headers: {
+        "Authorization": "Bearer " + token
       }
+    });
+
+    if (!response.ok) {
+      const errText = await response.text();
+      throw new Error(`Failed to update status: ${errText}`);
     }
+
+    messageDiv.className = "text-success text-center mb-3 fw-bold";
+    messageDiv.textContent = `Leave request ${newStatus.toLowerCase()} successfully.`;
+    fetchLeaveRequests();
+  } catch (err) {
+    messageDiv.className = "text-danger text-center mb-3 fw-bold";
+    messageDiv.textContent = err.message;
+  }
+}
+
 
     window.onload = fetchLeaveRequests;
   </script>

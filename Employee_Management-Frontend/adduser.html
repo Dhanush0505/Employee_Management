@@ -4,35 +4,133 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Add User</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
   <link
-    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
-    rel="stylesheet"
-  />
+  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+  rel="stylesheet"
+/>
+  <style>
+    :root {
+      --bg: linear-gradient(to right, #1c2765, #eec2d5);
+      --text: #fff;
+      --input-bg: rgba(255, 255, 255, 0.15);
+    }
+
+    body.dark {
+      --bg: linear-gradient(to right, #121212, #2d2d2d);
+      --text: #eee;
+      --input-bg: rgba(255, 255, 255, 0.07);
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      min-height: 100vh;
+      transition: all 0.3s ease;
+    }
+
+    .form-container {
+      max-width: 600px;
+      margin: 60px auto;
+      background-color: rgba(255, 255, 255, 0.06);
+      backdrop-filter: blur(12px);
+      border-radius: 16px;
+      padding: 30px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+    }
+
+    .form-control, .form-select {
+      background-color: var(--input-bg);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      color: var(--text);
+    }
+
+    .form-control::placeholder {
+      color: #ccc;
+    }
+
+    .btn-submit {
+      background: linear-gradient(to right, #6a11cb, #2575fc);
+      border: none;
+      color: #fff;
+      font-weight: bold;
+    }
+
+    .btn-submit:hover {
+      background: linear-gradient(to right, #5530c9, #1d59f0);
+    }
+
+    .top-nav {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    a.link-nav {
+      color: var(--text);
+      text-decoration: underline;
+    }
+
+    .dark-toggle {
+  position: fixed;
+  top: 20px;
+  right: 25px;
+  background-color: rgba(255, 255, 255, 0.15);
+  color: #fff;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+  cursor: pointer;
+  backdrop-filter: blur(6px);
+  transition: all 0.3s ease;
+}
+
+body.dark .dark-toggle {
+  background-color: rgba(0, 0, 0, 0.4);
+}
+
+  </style>
 </head>
+
 <body>
-  <div class="container mt-5" style="max-width: 600px;">
-    <h2 class="mb-4 text-center">Add New User</h2>
+  <div class="dark-toggle" onclick="toggleDarkMode()">
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-cloud-moon" viewBox="0 0 16 16">
+        <path d="M7 8a3.5 3.5 0 0 1 3.5 3.555.5.5 0 0 0 .625.492A1.503 1.503 0 0 1 13 13.5a1.5 1.5 0 0 1-1.5 1.5H3a2 2 0 1 1 .1-3.998.5.5 0 0 0 .509-.375A3.5 3.5 0 0 1 7 8m4.473 3a4.5 4.5 0 0 0-8.72-.99A3 3 0 0 0 3 16h8.5a2.5 2.5 0 0 0 0-5z"/>
+        <path d="M11.286 1.778a.5.5 0 0 0-.565-.755 4.595 4.595 0 0 0-3.18 5.003 5.5 5.5 0 0 1 1.055.209A3.6 3.6 0 0 1 9.83 2.617a4.593 4.593 0 0 0 4.31 5.744 3.58 3.58 0 0 1-2.241.634q.244.477.394 1a4.59 4.59 0 0 0 3.624-2.04.5.5 0 0 0-.565-.755 3.593 3.593 0 0 1-4.065-5.422z"/>
+      </svg>
+    <i class="fas fa-moon" id="themeIcon"></i>
+  </div>
+
+  <div class="form-container">
+    <h2 class="text-center mb-4">Add New User</h2>
+
+    <div class="top-nav">
+      <a href="existingusers.html" class="link-nav">View Existing Users</a>
+    </div>
 
     <form id="addUserForm">
-      <!-- Your existing form fields here -->
       <div class="mb-3">
-        <label for="username" class="form-label">Username *</label>
-        <input type="text" id="username" class="form-control" required />
+        <label class="form-label">Username *</label>
+        <input type="text" class="form-control" id="username" required />
       </div>
       <div class="mb-3">
-        <label for="password" class="form-label">Password *</label>
-        <input type="password" id="password" class="form-control" required />
+        <label class="form-label">Password *</label>
+        <input type="password" class="form-control" id="password" required />
       </div>
       <div class="mb-3">
-        <label for="email" class="form-label">Email *</label>
-        <input type="email" id="email" class="form-control" required />
+        <label class="form-label">Email *</label>
+        <input type="email" class="form-control" id="email" required />
       </div>
       <div class="mb-3">
-        <label for="mobilenumber" class="form-label">Mobile Number *</label>
-        <input type="number" id="mobilenumber" class="form-control" required />
+        <label class="form-label">Mobile Number *</label>
+        <input type="number" class="form-control" id="mobilenumber" required />
       </div>
       <div class="mb-3">
-        <label for="role" class="form-label">Role *</label>
+        <label class="form-label">Role *</label>
         <select id="role" class="form-select" required>
           <option value="" disabled selected>Select Role</option>
           <option value="ADMIN">Admin</option>
@@ -40,143 +138,78 @@
         </select>
       </div>
       <div class="mb-3">
-        <label for="dateofjoining" class="form-label">Date of Joining *</label>
-        <input type="date" id="dateofjoining" class="form-control" required />
+        <label class="form-label">Date of Joining *</label>
+        <input type="date" class="form-control" id="dateofjoining" required />
       </div>
       <div class="mb-3">
-        <label for="department" class="form-label">Department *</label>
-        <input type="text" id="department" class="form-control" required />
+        <label class="form-label">Department *</label>
+        <input type="text" class="form-control" id="department" required />
       </div>
-
-      <button type="submit" class="btn btn-success w-100">Add User</button>
+      <button type="submit" class="btn btn-submit w-100">Add User</button>
+      <div id="message" class="mt-3 text-center"></div>
     </form>
-
-    <div id="message" class="mt-3 text-center"></div>
-    <hr class="my-4" />
-    <h3 class="mb-3 text-center">Existing Employees</h3>
-    <div id="employeeList" class="table-responsive"></div>
   </div>
 
   <script>
-    async function fetchEmployees() {
-      const employeeListDiv = document.getElementById("employeeList");
-      employeeListDiv.innerHTML = "Loading employees...";
+    document.getElementById('addUserForm').addEventListener('submit', async function (e) {
+    e.preventDefault();
 
-      try {
-        const token = localStorage.getItem("jwtToken"); 
-        const response = await fetch("http://localhost:8080/auth/admin/users", {
-          headers: {
-            "Authorization": "Bearer " + token
-          }
-        });
-
-        if (!response.ok) {
-          employeeListDiv.innerHTML = `<p class="text-danger">Failed to load employees: ${response.statusText}</p>`;
-          return;
-        }
-
-        const employees = await response.json();
-
-        if (!employees.length) {
-          employeeListDiv.innerHTML = "<p>No employees found.</p>";
-          return;
-        }
-
-        // Build table
-        let tableHtml = `
-          <table class="table table-striped table-bordered">
-            <thead>
-              <tr>
-                <th>Username</th>
-                <th>Email</th>
-                <th>Mobile Number</th>
-                <th>Role</th>
-                <th>Date of Joining</th>
-                <th>Department</th>
-              </tr>
-            </thead>
-            <tbody>
-        `;
-
-        employees.forEach(emp => {
-          tableHtml += `
-            <tr>
-              <td>${emp.username}</td>
-              <td>${emp.email}</td>
-              <td>${emp.mobilenumber}</td>
-              <td>${emp.role}</td>
-              <td>${emp.dateofjoining}</td>
-              <td>${emp.department}</td>
-            </tr>
-          `;
-        });
-
-        tableHtml += `</tbody></table>`;
-
-        employeeListDiv.innerHTML = tableHtml;
-
-      } catch (error) {
-        employeeListDiv.innerHTML = `<p class="text-danger">Error loading employees: ${error.message}</p>`;
-      }
+    const token = localStorage.getItem("jwtToken"); // Assumes token is already stored from login
+    console.log("JWT Token:", token);
+    if (!token) {
+      document.getElementById('message').innerHTML = `<span class="text-danger">Unauthorized: Please login first.</span>`;
+      return;
     }
 
-    document.getElementById("addUserForm").addEventListener("submit", async (e) => {
-      e.preventDefault();
+    const user = {
+      username: document.getElementById('username').value,
+      password: document.getElementById('password').value,
+      email: document.getElementById('email').value,
+      mobilenumber: document.getElementById('mobilenumber').value,
+      role: document.getElementById('role').value,
+      dateofjoining: document.getElementById('dateofjoining').value,
+      department: document.getElementById('department').value
+    };
 
-      const messageDiv = document.getElementById("message");
-      messageDiv.textContent = "";
-      messageDiv.style.color = "black";
+    try {
+      const response = await fetch('http://localhost:8080/api/admin/adduser', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(user)
+      });
 
-      const data = {
-        username: document.getElementById("username").value.trim(),
-        password: document.getElementById("password").value,
-        email: document.getElementById("email").value.trim(),
-        mobilenumber: Number(document.getElementById("mobilenumber").value),
-        role: document.getElementById("role").value,
-        dateofjoining: document.getElementById("dateofjoining").value,
-        department: document.getElementById("department").value.trim(),
-      };
+      const messageDiv = document.getElementById('message');
 
-      if (!data.username || !data.password || !data.email || !data.mobilenumber || !data.role || !data.dateofjoining || !data.department) {
-        messageDiv.style.color = "red";
-        messageDiv.textContent = "Please fill out all required fields.";
-        return;
+      if (response.ok) {
+        const result = await response.json();
+        messageDiv.innerHTML = `<span class="text-success">User ${result.username} added successfully!</span>`;
+        document.getElementById('addUserForm').reset();
+      } else {
+        const errorText = await response.text();
+        messageDiv.innerHTML = `<span class="text-danger">Failed to add user. ${errorText}</span>`;
       }
+    } catch (error) {
+      document.getElementById('message').innerHTML = `<span class="text-danger">Error: ${error.message}</span>`;
+    }
+  });
 
-      try {
-        const token = localStorage.getItem("jwtToken"); 
+  function toggleDarkMode() {
+    document.body.classList.toggle("dark");
+    const isDark = document.body.classList.contains("dark");
+    localStorage.setItem("darkMode", isDark);
+    document.getElementById("themeIcon").className = isDark ? "fas fa-sun" : "fas fa-moon";
+  }
 
-        const response = await fetch("http://localhost:8080/auth/admin/adduser", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": "Bearer " + token
-          },
-          body: JSON.stringify(data)
-        });
-
-        if (response.ok) {
-          messageDiv.style.color = "green";
-          messageDiv.textContent = "User added successfully!";
-          e.target.reset();
-
-          // Refresh employee list after successful addition
-          fetchEmployees();
-        } else {
-          const errorText = await response.text();
-          messageDiv.style.color = "red";
-          messageDiv.textContent = `Failed to add user: ${errorText}`;
-        }
-      } catch (error) {
-        messageDiv.style.color = "red";
-        messageDiv.textContent = "Error: " + error.message;
-      }
-    });
-
-    // Fetch employee list on page load
-    window.addEventListener("DOMContentLoaded", fetchEmployees);
+  window.onload = () => {
+    const darkMode = localStorage.getItem("darkMode") === "true";
+    if (darkMode) {
+      document.body.classList.add("dark");
+      document.getElementById("themeIcon").className = "fas fa-sun";
+    }
+  };
   </script>
-
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
