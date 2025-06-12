@@ -5,9 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -50,7 +48,10 @@ public class authconfig {
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
-                .httpBasic(Customizer.withDefaults())
+                .oauth2Login(oauth -> oauth
+                        .userInfoEndpoint(user -> user.userService(customOAuth2UserService))
+                        //.successHandler(oAuthSuccessHandler)
+                )
 
                 .addFilterBefore(jwtFilter , UsernamePasswordAuthenticationFilter.class);
 

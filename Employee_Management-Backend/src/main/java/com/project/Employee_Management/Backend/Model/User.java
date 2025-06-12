@@ -2,6 +2,7 @@ package com.project.Employee_Management.Backend.Model;
 
 import com.project.Employee_Management.Backend.Model.Enum.role;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 import java.time.LocalDate;
@@ -17,6 +18,7 @@ public class User {
 
     private String username;
     private String password;
+    @NotNull
     private String email;
     private Long mobilenumber;
 
@@ -25,5 +27,6 @@ public class User {
 
     private LocalDate dateofjoining;
     private String department;
+
 
 }

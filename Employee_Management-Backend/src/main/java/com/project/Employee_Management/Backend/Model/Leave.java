@@ -2,6 +2,7 @@ package com.project.Employee_Management.Backend.Model;
 
 import com.project.Employee_Management.Backend.Model.Enum.LeaveStatus;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 import java.time.LocalDate;
@@ -19,6 +20,8 @@ public class Leave {
     @JoinColumn(name = "user_id")  // foreign key column name
     private User user;
 
+    @NotNull
+    private String email;
     private String username;
     private LocalDate startDate;  // changed to camelCase
     private LocalDate endDate;    // changed to camelCase
