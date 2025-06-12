@@ -105,8 +105,9 @@
     <a href="http://127.0.0.1:5500/LeaveRequest.html" class="btn-custom">Apply Leave</a>
     <a href="http://127.0.0.1:5500/leaveStatus.html" class="btn-custom">View Leave Status</a>
     <a href="http://127.0.0.1:5500/Profile.html" class="btn-custom">View Profile</a>
+    <a href="#" class="btn-custom" onclick="logout()">Logout</a>
     <div id="error">User not authenticated.</div>
-  </div>
+  </div>  
 
   <script>
     async function loadUsername() {
@@ -153,6 +154,11 @@
       localStorage.setItem("theme", isDark ? "dark" : "light");
       btn.textContent = isDark ? "☀️" : "🌙";
     }
+    function logout() {
+  localStorage.removeItem("jwtToken");
+  window.location.href = "index.html"; // or adjust the path as needed
+}
+
   </script>
 </body>
 </html>

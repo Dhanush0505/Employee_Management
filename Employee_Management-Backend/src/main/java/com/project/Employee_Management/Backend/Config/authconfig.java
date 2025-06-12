@@ -41,17 +41,18 @@ public class authconfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/login").permitAll()
+                        .requestMatchers("/api/auth/**").permitAll()
+
                         .requestMatchers("/auth/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
-                .oauth2Login(oauth -> oauth
-                        .userInfoEndpoint(user -> user.userService(customOAuth2UserService))
-                        //.successHandler(oAuthSuccessHandler)
-                )
+//                .oauth2Login(oauth -> oauth
+//                        .userInfoEndpoint(user -> user.userService(customOAuth2UserService))
+//                        //.successHandler(oAuthSuccessHandler)
+//                )
 
                 .addFilterBefore(jwtFilter , UsernamePasswordAuthenticationFilter.class);
 

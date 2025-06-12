@@ -53,25 +53,25 @@
       margin-bottom: 15px;
     }
 
-    .top-controls {
+    .toggle-btn {
       position: absolute;
-      top: 15px;
+      top: 20px;
       right: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      background: transparent;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      color: var(--glass-text);
       display: flex;
-      gap: 15px;
       align-items: center;
-    }
-
-    .notification-icon {
-      position: relative;
+      justify-content: center;
       cursor: pointer;
+      transition: transform 0.4s ease, background 0.4s ease, color 0.4s ease;
     }
 
-    .notification-icon .badge {
-      position: absolute;
-      top: -6px;
-      right: -6px;
-      font-size: 10px;
+    .toggle-btn.rotate {
+      transform: rotate(180deg);
     }
 
     .btn-dashboard {
@@ -115,11 +115,6 @@
       background: #666;
     }
 
-    .dark-toggle {
-      cursor: pointer;
-      font-size: 18px;
-    }
-
     .stats-box {
       background: rgba(255, 255, 255, 0.1);
       border-radius: 12px;
@@ -136,17 +131,9 @@
 </head>
 
 <body>
-  <div class="dashboard-container">
-    <div class="top-controls">
-      <div class="notification-icon">
-        <i class="fas fa-bell"></i>
-        <span class="badge bg-danger" id="notif-count">0</span>
-      </div>
-      <div class="dark-toggle" onclick="toggleTheme()">
-        <i class="fas fa-moon" id="themeIcon"></i>
-      </div>
-    </div>
+  <button class="toggle-btn" onclick="toggleTheme()" id="themeToggle">🌙</button>
 
+  <div class="dashboard-container">
     <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="Admin Avatar" class="admin-avatar" />
     <h2 id="greeting">Hello, Admin!</h2>
 
@@ -176,14 +163,12 @@
       try {
         const token = localStorage.getItem("jwtToken");
         if (!token) throw new Error("User not authenticated.");
-
-        const profileRes = await fetch("http://localhost:8080/api/admin/user/employee-count", {
-  headers: {
-    "Authorization": "Bearer " + token,
-    "Content-Type": "application/json"
-  }
-});
-
+        const profileRes = await fetch("http://localhost:8080/api/admin/profile", {
+          headers: {
+            "Authorization": "Bearer " + token,
+            "Content-Type": "application/json"
+          }
+        });
 
         const statsRes = await fetch("http://localhost:8080/api/admin/stats", {
           headers: { "Authorization": "Bearer " + token }
@@ -193,12 +178,9 @@
 
         const profile = await profileRes.json();
         const stats = await statsRes.json();
-
         document.getElementById("greeting").textContent = `Hello, ${profile.username}!`;
         document.getElementById("userCount").textContent = stats.totalUsers;
         document.getElementById("leaveCount").textContent = stats.pendingLeaves;
-        document.getElementById("notif-count").textContent = stats.pendingLeaves;
-
       } catch (err) {
         errorDiv.textContent = err.message;
       }
@@ -210,20 +192,22 @@
     }
 
     function toggleTheme() {
+      const btn = document.getElementById("themeToggle");
       document.body.classList.toggle("dark");
+      btn.classList.toggle("rotate");
+
       const isDark = document.body.classList.contains("dark");
-      localStorage.setItem("darkMode", isDark);
-      document.getElementById("themeIcon").className = isDark ? "fas fa-sun" : "fas fa-moon";
+      localStorage.setItem("theme", isDark ? "dark" : "light");
+      btn.textContent = isDark ? "☀️" : "🌙";
     }
 
-    // On load  
-    window.onload = () => {
-      const darkMode = localStorage.getItem("darkMode") === "true";
-      if (darkMode) {
-        document.body.classList.add("dark");
-        document.getElementById("themeIcon").className = "fas fa-sun";
-      }
+    window.onload = function () {
       loadDashboard();
+      if (localStorage.getItem("theme") === "dark") {
+        document.body.classList.add("dark");
+        document.getElementById("themeToggle").classList.add("rotate");
+        document.getElementById("themeToggle").textContent = "☀️";
+      }
     };
   </script>
 </body>
