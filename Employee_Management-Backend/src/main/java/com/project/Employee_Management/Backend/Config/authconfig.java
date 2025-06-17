@@ -1,10 +1,12 @@
 package com.project.Employee_Management.Backend.Config;
 
+import com.project.Employee_Management.Backend.Service.CustomOAuth2UserService;
 import com.project.Employee_Management.Backend.Service.CustomUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -26,10 +28,14 @@ import java.util.List;
 public class authconfig {
 
     private final CustomUserDetailsService userDetailsService;
+    private final CustomOAuth2UserService customOAuth2UserService;
+    private final CustomOauthSuccessHandler customOauthSuccessHandler;
 
     @Autowired
-    public authconfig(CustomUserDetailsService userDetailsService) {
+    public authconfig(CustomUserDetailsService userDetailsService, CustomOAuth2UserService customOAuth2UserService,CustomOauthSuccessHandler customOauthSuccessHandler ) {
         this.userDetailsService = userDetailsService;
+        this.customOAuth2UserService = customOAuth2UserService;
+        this.customOauthSuccessHandler = customOauthSuccessHandler;
     }
 
     @Autowired
@@ -42,17 +48,18 @@ public class authconfig {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**").permitAll()
-
+                        .requestMatchers("/oauth2/**","login/oauth2/**","/login/**").permitAll()
                         .requestMatchers("/auth/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
-//                .oauth2Login(oauth -> oauth
-//                        .userInfoEndpoint(user -> user.userService(customOAuth2UserService))
-//                        //.successHandler(oAuthSuccessHandler)
-//                )
+//                .oauth2Login(Customizer.withDefaults())
+                .oauth2Login(oauth -> oauth
+                        .userInfoEndpoint(user -> user.userService(customOAuth2UserService))
+                        .successHandler(customOauthSuccessHandler)
+                )
 
                 .addFilterBefore(jwtFilter , UsernamePasswordAuthenticationFilter.class);
 
@@ -99,6 +106,7 @@ public class authconfig {
 
         return authBuilder.build();
     }
+
 
     @Bean
     public PasswordEncoder passwordEncoder() {

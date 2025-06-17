@@ -25,6 +25,9 @@ import java.util.concurrent.ConcurrentHashMap;
 @CrossOrigin(origins = "http://localhost:5500")
 public class AuthController {
 
+    //Global otp string
+    String otp = "";
+
     private final AuthService authService;
     private final UserRepository userRepository;
     private final OTPService otpService;
@@ -49,6 +52,10 @@ public class AuthController {
     @GetMapping("/check-email")
     public ResponseEntity<Boolean> checkEmailExists(@RequestParam String email) {
         boolean exists = userRepository.existsByEmail(email);
+        if(exists){
+            //generate otp and send to email
+            otp = otpService.GenerateOTP(email);
+        }
         return ResponseEntity.ok(exists);
     }
 
@@ -68,7 +75,10 @@ public class AuthController {
 
     @PostMapping("/otp-handler")
     public ResponseEntity<String> verifyOtp(@RequestBody OtpRequest request) {
-        boolean isValid = otpService.verifyOtp(request.getEmail(), request.getOtp());
+
+        //Validate otp
+
+        boolean isValid = otpService.verifyOtp(request.getOtp(),otp);
 
         if (isValid) {
             return ResponseEntity.ok("OTP verified");

@@ -4,6 +4,7 @@ import com.project.Employee_Management.Backend.Model.Enum.role;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
+import org.hibernate.validator.constraints.UniqueElements;
 
 import java.time.LocalDate;
 import java.util.Date;
@@ -18,6 +19,8 @@ public class User {
 
     private String username;
     private String password;
+
+    @UniqueElements
     @NotNull
     private String email;
     private Long mobilenumber;

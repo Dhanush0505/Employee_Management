@@ -20,4 +20,6 @@ public class OtpRequest {
     }
 
     private String otp;
+
+
 }
